@@ -23,7 +23,7 @@ chmod +x setup.sh
 This will:
 1. Install dependencies
 2. Build the TypeScript code
-2. Create a `.env` file if it doesn't exist
+3. Create a `.env` file if it doesn't exist
 4. Generate a Claude Desktop configuration file
 
 Then edit your `.env` file with your actual credentials:
@@ -118,4 +118,4 @@ If you encounter issues:
 
 ## License
 
-MIT 
+MIT
