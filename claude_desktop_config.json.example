@@ -1,0 +1,11 @@
+{
+  "powerdrill": {
+    "command": "node",
+    "args": ["dist/index.js"],
+    "cwd": "${workspaceRoot}",
+    "env": {
+      "POWERDRILL_USER_ID": "${POWERDRILL_USER_ID}",
+      "POWERDRILL_PROJECT_API_KEY": "${POWERDRILL_PROJECT_API_KEY}"
+    }
+  }
+} 
