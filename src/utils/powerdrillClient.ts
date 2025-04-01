@@ -10,6 +10,17 @@ interface PowerdrillConfig {
   apiUrl: string;
 }
 
+// Job creation parameters interface
+export interface CreateJobParams {
+  session_id?: string;
+  question: string;
+  dataset_id: string;
+  datasource_ids?: string[];
+  stream?: boolean;
+  output_language?: string;
+  job_mode?: string;
+}
+
 export class PowerdrillClient {
   private client;
   private config: PowerdrillConfig;
@@ -59,6 +70,27 @@ export class PowerdrillClient {
       return response.data;
     } catch (error: any) {
       console.error(`Error retrieving dataset overview for ${datasetId}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a job to analyze data with natural language questions
+   * @param params Parameters for creating a job
+   * @returns Promise with the job result
+   */
+  async createJob(params: CreateJobParams) {
+    try {
+      // Include user_id in the request body
+      const requestBody = {
+        ...params,
+        user_id: this.config.userId
+      };
+
+      const response = await this.client.post('/jobs', requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating job:', error.message);
       throw error;
     }
   }

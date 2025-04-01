@@ -7,6 +7,7 @@ A Model Context Protocol (MCP) server that provides tools to interact with Power
 - Authenticate with Powerdrill using User ID and Project API Key
 - List available datasets through MCP tools
 - Get detailed overview information for a specific dataset
+- Create and run jobs on datasets with natural language questions
 - Integration with Claude Desktop and other MCP-compatible clients
 
 ## Quick Setup
@@ -86,6 +87,7 @@ Once connected, you can use the Powerdrill tools in your conversations with Clau
 
 - List datasets: `What datasets are available in my Powerdrill account?`
 - Get dataset overview: `Tell me more about this dataset: {dataset_id}`
+- Create a job: `Analyze dataset {dataset_id} with this question: "How has the trend changed over time?"`
 
 ## Available Tools
 
@@ -131,6 +133,50 @@ Example response:
     "Travel Bookings",
     "Booking Trends",
     "Travel Agencies"
+  ]
+}
+```
+
+### powerdrill_create_job
+
+Creates a job to analyze data with natural language questions.
+
+Parameters:
+- `question` (required): The natural language question or prompt to analyze the data
+- `dataset_id` (required): The ID of the dataset to analyze
+- `datasource_ids` (optional): Array of specific data source IDs within the dataset to analyze
+- `session_id` (optional): Session ID to group related jobs
+- `stream` (optional, default: false): Whether to stream the results
+- `output_language` (optional, default: "AUTO"): The language for the output
+- `job_mode` (optional, default: "AUTO"): The job mode
+
+Example response:
+```json
+{
+  "job_id": "job-cm3ikdeuj02zk01l1yeuirt77",
+  "blocks": [
+    {
+      "type": "CODE",
+      "content": "```python\nimport pandas as pd\n\ndef invoke(input_0: pd.DataFrame) -> pd.DataFrame:\n...",
+      "stage": "Analyze"
+    },
+    {
+      "type": "TABLE",
+      "url": "https://static.powerdrill.ai/tmp_datasource_cache/code_result/...",
+      "name": "trend_data.csv",
+      "expires_at": "2024-11-21T09:56:34.290544Z"
+    },
+    {
+      "type": "IMAGE",
+      "url": "https://static.powerdrill.ai/tmp_datasource_cache/code_result/...",
+      "name": "Trend of Deaths from Natural Disasters Over the Century",
+      "expires_at": "2024-11-21T09:56:34.290544Z"
+    },
+    {
+      "type": "MESSAGE",
+      "content": "Analysis of Trends in the Number of Deaths from Natural Disasters...",
+      "stage": "Respond"
+    }
   ]
 }
 ```
