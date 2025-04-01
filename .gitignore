@@ -26,3 +26,6 @@ Thumbs.db
 # Logs
 logs/
 *.log 
+
+# Config
+claude_desktop_config.json
