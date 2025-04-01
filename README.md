@@ -6,6 +6,7 @@ A Model Context Protocol (MCP) server that provides tools to interact with Power
 
 - Authenticate with Powerdrill using User ID and Project API Key
 - List available datasets through MCP tools
+- Get detailed overview information for a specific dataset
 - Integration with Claude Desktop and other MCP-compatible clients
 
 ## Quick Setup
@@ -84,6 +85,7 @@ npm start
 Once connected, you can use the Powerdrill tools in your conversations with Claude:
 
 - List datasets: `What datasets are available in my Powerdrill account?`
+- Get dataset overview: `Tell me more about this dataset: {dataset_id}`
 
 ## Available Tools
 
@@ -103,6 +105,32 @@ Example response:
       "name": "mysql",
       "description": "mysql databases"
     }
+  ]
+}
+```
+
+### powerdrill_get_dataset_overview
+
+Gets detailed overview information about a specific dataset.
+
+Parameters:
+- `datasetId` (required): The ID of the dataset to get overview information for
+
+Example response:
+```json
+{
+  "id": "dset-cm5axptyyxxx298",
+  "name": "sales_indicators_2024",
+  "description": "A dataset comprising 373 travel bookings with 15 attributes...",
+  "summary": "This dataset contains 373 travel bookings with 15 attributes...",
+  "exploration_questions": [
+    "How does the booking price trend over time based on the BookingTimestamp?",
+    "How does the average booking price change with respect to the TravelDate?"
+  ],
+  "keywords": [
+    "Travel Bookings",
+    "Booking Trends",
+    "Travel Agencies"
   ]
 }
 ```

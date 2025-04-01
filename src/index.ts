@@ -56,6 +56,8 @@ server.tool(
         datasets = datasets.slice(0, limit);
       }
       
+      console.log(`Retrieved ${datasets.length} datasets from Powerdrill`);
+      
       // Format the response as MCP content
       const result = {
         datasets: datasets.map((dataset: Dataset) => ({
@@ -83,6 +85,62 @@ server.tool(
           {
             type: "text",
             text: `Error listing datasets: ${error.message}`
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
+// Register the getDatasetOverview tool
+server.tool(
+  'powerdrill_get_dataset_overview',
+  {
+    datasetId: z.string().describe('The ID of the dataset to get overview information for')
+  },
+  async (args, extra) => {
+    try {
+      const { datasetId } = args;
+      
+      // Initialize Powerdrill client
+      const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
+      
+      // Fetch dataset overview
+      const response = await client.getDatasetOverview(datasetId);
+      
+      // Check if response is valid
+      if (response.code !== 0 || !response.data) {
+        throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
+      }
+      
+      console.log(`Retrieved overview for dataset ${datasetId}`);
+      
+      // Format the response as MCP content
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              id: response.data.id,
+              name: response.data.name,
+              description: response.data.description,
+              summary: response.data.summary,
+              exploration_questions: response.data.exploration_questions,
+              keywords: response.data.keywords
+            })
+          }
+        ]
+      };
+    } catch (error: any) {
+      console.error(`Error getting dataset overview: ${error.message}`);
+      
+      // Return error response
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error getting dataset overview: ${error.message}`
           }
         ],
         isError: true

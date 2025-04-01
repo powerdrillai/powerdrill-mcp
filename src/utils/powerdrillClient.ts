@@ -49,16 +49,16 @@ export class PowerdrillClient {
   }
 
   /**
-   * Get details for a specific dataset
-   * @param datasetId The ID of the dataset to retrieve
-   * @returns Promise with the dataset details
+   * Get overview information for a specific dataset
+   * @param datasetId The ID of the dataset to retrieve overview for
+   * @returns Promise with the dataset overview
    */
-  async getDataset(datasetId: string) {
+  async getDatasetOverview(datasetId: string) {
     try {
-      const response = await this.client.get(`/datasets/${datasetId}?user_id=${this.config.userId}`);
+      const response = await this.client.get(`/datasets/${datasetId}/overview?user_id=${this.config.userId}`);
       return response.data;
     } catch (error: any) {
-      console.error(`Error retrieving dataset ${datasetId}:`, error.message);
+      console.error(`Error retrieving dataset overview for ${datasetId}:`, error.message);
       throw error;
     }
   }
