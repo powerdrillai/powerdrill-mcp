@@ -25,8 +25,11 @@ if [ ! -f claude_desktop_config.json ]; then
   cat > claude_desktop_config.json << EOL
 {
   "powerdrill": {
-    "command": "node",
-    "args": ["$(pwd)/dist/index.js"],
+    "command": "npx",
+    "args": [
+      "-y",
+      "@powerdrillai/powerdrill-mcp@latest"
+    ],
     "env": {
       "POWERDRILL_USER_ID": "${POWERDRILL_USER_ID:-your_user_id}",
       "POWERDRILL_PROJECT_API_KEY": "${POWERDRILL_PROJECT_API_KEY:-your_project_api_key}"
@@ -44,8 +47,11 @@ if [ ! -f cursor_config.json ]; then
   cat > cursor_config.json << EOL
 {
   "powerdrill": {
-    "command": "node",
-    "args": ["$(pwd)/dist/index.js"],
+    "command": "npx",
+    "args": [
+      "-y",
+      "@powerdrillai/powerdrill-mcp@latest"
+    ],
     "env": {
       "POWERDRILL_USER_ID": "${POWERDRILL_USER_ID:-your_user_id}",
       "POWERDRILL_PROJECT_API_KEY": "${POWERDRILL_PROJECT_API_KEY:-your_project_api_key}"

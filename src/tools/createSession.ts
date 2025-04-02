@@ -52,8 +52,6 @@ export const createSessionTool = {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
 
-      // console.log(`Created session ${response.data.id}`);
-
       // Format the response as MCP content
       return {
         content: [

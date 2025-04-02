@@ -39,14 +39,12 @@ server.tool(
   },
   async (args, extra) => {
     try {
-      // console.log(`Listing datasets with limit ${args.limit || 'unlimited'}`);
       const { limit } = args;
 
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
 
       // Fetch datasets
-      // console.log('Fetching datasets from Powerdrill API...');
       const response = await client.listDatasets();
 
       // Check if response is valid
@@ -68,10 +66,7 @@ server.tool(
         datasets = datasets.slice(0, limit);
       }
 
-      // console.log(`Retrieved ${datasets.length} datasets from Powerdrill (total: ${response.data.total_items || 'unknown'})`);
-
       if (datasets.length === 0) {
-        console.log('No datasets found');
         return {
           content: [
             {
@@ -148,8 +143,6 @@ server.tool(
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
 
-      // console.log(`Retrieved overview for dataset ${datasetId}`);
-
       // Format the response as MCP content
       return {
         content: [
@@ -218,8 +211,6 @@ server.tool(
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-
-      // console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
 
       // Process blocks for a cleaner response
       const processedBlocks = response.data.blocks.map((block: any) => {
@@ -316,8 +307,6 @@ server.tool(
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
 
-      // console.log(`Created session ${response.data.id}`);
-
       // Format the response as MCP content
       return {
         content: [
@@ -346,13 +335,110 @@ server.tool(
   }
 );
 
+// Register the listDataSources tool
+server.tool(
+  'mcp_powerdrill_list_data_sources',
+  {
+    datasetId: z.string().describe('The ID of the dataset to list data sources from'),
+    pageNumber: z.number().optional().describe('The page number to start listing (default: 1)'),
+    pageSize: z.number().optional().describe('The number of items on a single page (default: 10)'),
+    status: z.string().optional().describe('Filter data sources by status: synching, invalid, synched (comma-separated for multiple)')
+  },
+  async (args, extra) => {
+    try {
+      const { datasetId, pageNumber, pageSize, status } = args;
+
+      // Initialize Powerdrill client
+      const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
+
+      // Fetch data sources
+      const response = await client.listDataSources(datasetId, {
+        pageNumber,
+        pageSize,
+        status
+      });
+
+      // Check if response is valid
+      if (!response) {
+        throw new Error(`Empty response received from API`);
+      }
+
+      if (response.code !== 0) {
+        throw new Error(`API returned error code: ${response.code}, message: ${response.message || 'No message'}`);
+      }
+
+      if (!response.data || !response.data.records) {
+        throw new Error(`Invalid API response format: missing data.records property`);
+      }
+
+      const dataSources = response.data.records || [];
+
+      if (dataSources.length === 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                message: "No data sources found in the dataset",
+                data_sources: []
+              }, null, 2)
+            }
+          ]
+        };
+      }
+
+      // Format the response as MCP content
+      const result = {
+        count: dataSources.length,
+        total: response.data.total_items || dataSources.length,
+        page: response.data.page_number || 1,
+        page_size: response.data.page_size || 10,
+        data_sources: dataSources.map((dataSource: any) => ({
+          id: dataSource.id,
+          name: dataSource.name,
+          type: dataSource.type,
+          status: dataSource.status,
+          size: dataSource.size,
+          dataset_id: dataSource.dataset_id
+        }))
+      };
+
+      // Return the formatted response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }
+        ]
+      };
+    } catch (error: any) {
+      console.error(`Error listing data sources: ${error.message}`);
+      console.error(error.stack);
+
+      // Return error response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              error: `Error listing data sources: ${error.message}`,
+              errorType: error.name,
+              errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }, null, 2)
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
 // Start the server
 const transport = new StdioServerTransport();
 server.connect(transport)
   .then(() => {
-    // console.log('Powerdrill MCP server started');
   })
   .catch((error: Error) => {
-    // console.error('Failed to start server:', error);
     process.exit(1);
   }); 

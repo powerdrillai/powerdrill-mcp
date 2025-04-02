@@ -61,8 +61,6 @@ export const createJobTool = {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
 
-      // console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
-
       // Process blocks for a cleaner response
       const processedBlocks = response.data.blocks.map((block: JobBlock) => {
         // For TABLE and IMAGE types, just include the URL and name

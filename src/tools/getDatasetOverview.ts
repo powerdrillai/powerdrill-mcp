@@ -41,8 +41,6 @@ export const getDatasetOverviewTool = {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
 
-      // console.log(`Retrieved overview for dataset ${datasetId}`);
-
       // Format the response as MCP content
       return {
         content: [

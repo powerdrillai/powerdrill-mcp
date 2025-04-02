@@ -44,7 +44,8 @@ powerdrill-mcp
 If using npx:
 
 ```bash
-npx @powerdrillai/powerdrill-mcp
+# Run the latest version
+npx -y @powerdrillai/powerdrill-mcp@latest
 ```
 
 You'll need to configure environment variables with your Powerdrill credentials before running:
@@ -91,13 +92,15 @@ This will:
 1. Install dependencies
 2. Build the TypeScript code
 3. Create a `.env` file if it doesn't exist
-4. Generate a Claude Desktop configuration file
+4. Generate configuration files for Claude Desktop and Cursor with the npx-based configuration (recommended)
 
 Then edit your `.env` file with your actual credentials:
 ```
 POWERDRILL_USER_ID=your_actual_user_id
 POWERDRILL_PROJECT_API_KEY=your_actual_project_api_key
 ```
+
+Also update the credentials in the generated configuration files before using them.
 
 ## Manual Installation
 
@@ -128,7 +131,27 @@ npm start
 
 1. Open Claude Desktop
 2. Go to Settings > Server Settings
-3. Add a new server with the configuration from `claude_desktop_config.json` or manually configure:
+3. Add a new server with one of the following configurations:
+
+#### Option 1: Using npx (Recommended)
+
+```json
+{
+  "powerdrill": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@powerdrillai/powerdrill-mcp@latest"
+    ],
+    "env": {
+      "POWERDRILL_USER_ID": "your_actual_user_id",
+      "POWERDRILL_PROJECT_API_KEY": "your_actual_project_api_key"
+    }
+  }
+}
+```
+
+#### Option 2: Using node with local installation
 
 ```json
 {
@@ -150,7 +173,27 @@ npm start
 
 1. Open Cursor
 2. Go to Settings > MCP Tools
-3. Add a new MCP tool with the following configuration:
+3. Add a new MCP tool with one of the following configurations:
+
+#### Option 1: Using npx (Recommended)
+
+```json
+{
+  "powerdrill": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@powerdrillai/powerdrill-mcp@latest"
+    ],
+    "env": {
+      "POWERDRILL_USER_ID": "your_actual_user_id",
+      "POWERDRILL_PROJECT_API_KEY": "your_actual_project_api_key"
+    }
+  }
+}
+```
+
+#### Option 2: Using node with local installation
 
 ```json
 {
@@ -191,8 +234,8 @@ Example response:
   "datasets": [
     {
       "id": "dataset-dasfadsgadsgas",
-      "name": "mysql",
-      "description": "mysql databases"
+      "name": "mydata",
+      "description": "my dataset"
     }
   ]
 }
