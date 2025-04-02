@@ -12,13 +12,23 @@ interface PowerdrillConfig {
 
 // Job creation parameters interface
 export interface CreateJobParams {
-  session_id?: string;
+  session_id: string;
   question: string;
   dataset_id: string;
   datasource_ids?: string[];
   stream?: boolean;
   output_language?: string;
   job_mode?: string;
+}
+
+// Session creation parameters interface
+export interface CreateSessionParams {
+  name: string;
+  user_id?: string;
+  output_language?: string;
+  job_mode?: string;
+  max_contextual_job_history?: number;
+  agent_id?: string;
 }
 
 export class PowerdrillClient {
@@ -91,6 +101,27 @@ export class PowerdrillClient {
       return response.data;
     } catch (error: any) {
       console.error('Error creating job:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new session
+   * @param params Parameters for creating a session
+   * @returns Promise with the session result
+   */
+  async createSession(params: CreateSessionParams) {
+    try {
+      // Include user_id in the request body if not provided
+      const requestBody = {
+        ...params,
+        user_id: params.user_id || this.config.userId
+      };
+
+      const response = await this.client.post('/sessions', requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating session:', error.message);
       throw error;
     }
   }

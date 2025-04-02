@@ -6,7 +6,7 @@ const createJobParamsSchema = z.object({
   question: z.string().describe('The natural language question or prompt to analyze the data'),
   dataset_id: z.string().describe('The ID of the dataset to analyze'),
   datasource_ids: z.array(z.string()).optional().describe('Optional array of specific data source IDs within the dataset to analyze'),
-  session_id: z.string().optional().describe('Optional session ID to group related jobs'),
+  session_id: z.string().describe('Session ID to group related jobs'),
   stream: z.boolean().optional().default(false).describe('Whether to stream the results (default: false)'),
   output_language: z.string().optional().default('AUTO').describe('The language for the output (default: AUTO)'),
   job_mode: z.string().optional().default('AUTO').describe('The job mode (default: AUTO)')
