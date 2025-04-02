@@ -1,4 +1,5 @@
 # Powerdrill MCP Server
+[![smithery badge](https://smithery.ai/badge/@powerdrillai/powerdrill-mcp)](https://smithery.ai/server/@powerdrillai/powerdrill-mcp)
 
 A Model Context Protocol (MCP) server that provides tools to interact with Powerdrill datasets, authenticated with Powerdrill User ID and Project API Key.
 
@@ -15,6 +16,14 @@ If you want to modify data (CREATE/DELETE/UPDATE) in Powerdrill, please go to ht
 - Integration with Claude Desktop and other MCP-compatible clients
 
 ## Installation
+
+### Installing via Smithery
+
+To install powerdrill-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@powerdrillai/powerdrill-mcp):
+
+```bash
+npx -y @smithery/cli install @powerdrillai/powerdrill-mcp --client claude
+```
 
 ### From npm
 
