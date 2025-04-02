@@ -34,7 +34,7 @@ export const createSessionTool = {
       // Initialize Powerdrill client
       const { PowerdrillClient } = await import('../utils/powerdrillClient.js');
       const client = new PowerdrillClient();
-      
+
       // Create session parameters
       const sessionParams: CreateSessionParams = {
         name: args.name,
@@ -43,17 +43,17 @@ export const createSessionTool = {
         max_contextual_job_history: args.max_contextual_job_history,
         agent_id: args.agent_id
       };
-      
+
       // Create session
       const response = await client.createSession(sessionParams);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Created session ${response.data.id}`);
-      
+
+      // console.log(`Created session ${response.data.id}`);
+
       // Format the response as MCP content
       return {
         content: [
@@ -67,7 +67,7 @@ export const createSessionTool = {
       };
     } catch (error: any) {
       console.error(`Error creating session: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [

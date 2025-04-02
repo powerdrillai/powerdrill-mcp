@@ -35,24 +35,24 @@ export const listDatasetsToolDefinition = {
   handler: async (args: ListDatasetsArgs, extra: unknown) => {
     try {
       const { limit } = args;
-      
+
       // Initialize Powerdrill client
       const client = new PowerdrillClient();
-      
+
       // Fetch datasets
       const response = await client.listDatasets();
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data || !response.data.records) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
+
       // Apply limit if provided
       let datasets = response.data.records || [];
       if (limit && limit > 0) {
         datasets = datasets.slice(0, limit);
       }
-      
+
       // Format the response as MCP content
       const result = {
         datasets: datasets.map((dataset: Dataset) => ({
@@ -61,7 +61,7 @@ export const listDatasetsToolDefinition = {
           description: dataset.description || ''
         }))
       };
-      
+
       // Return the formatted response
       return {
         content: [
@@ -73,7 +73,7 @@ export const listDatasetsToolDefinition = {
       };
     } catch (error: any) {
       console.error(`Error listing datasets: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [

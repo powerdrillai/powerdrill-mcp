@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import dotenv from 'dotenv';
@@ -31,60 +33,92 @@ const server = new McpServer({
 
 // Register the listDatasets tool with simplified parameters
 server.tool(
-  'powerdrill_list_datasets',
+  'mcp_powerdrill_list_datasets',
   {
     limit: z.number().optional().describe('Maximum number of datasets to return')
   },
   async (args, extra) => {
     try {
+      // console.log(`Listing datasets with limit ${args.limit || 'unlimited'}`);
       const { limit } = args;
-      
+
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
-      
+
       // Fetch datasets
+      // console.log('Fetching datasets from Powerdrill API...');
       const response = await client.listDatasets();
-      
+
       // Check if response is valid
-      if (response.code !== 0 || !response.data || !response.data.records) {
-        throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
+      if (!response) {
+        throw new Error(`Empty response received from API`);
       }
-      
+
+      if (response.code !== 0) {
+        throw new Error(`API returned error code: ${response.code}, message: ${response.message || 'No message'}`);
+      }
+
+      if (!response.data || !response.data.records) {
+        throw new Error(`Invalid API response format: missing data.records property`);
+      }
+
       // Apply limit if provided
       let datasets = response.data.records || [];
       if (limit && limit > 0) {
         datasets = datasets.slice(0, limit);
       }
-      
-      console.log(`Retrieved ${datasets.length} datasets from Powerdrill`);
-      
+
+      // console.log(`Retrieved ${datasets.length} datasets from Powerdrill (total: ${response.data.total_items || 'unknown'})`);
+
+      if (datasets.length === 0) {
+        console.log('No datasets found');
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                message: "No datasets found",
+                datasets: []
+              })
+            }
+          ]
+        };
+      }
+
       // Format the response as MCP content
       const result = {
+        count: datasets.length,
+        total: response.data.total_items || datasets.length,
         datasets: datasets.map((dataset: Dataset) => ({
           id: dataset.id,
           name: dataset.name,
           description: dataset.description || ''
         }))
       };
-      
+
       // Return the formatted response
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(result)
+            text: JSON.stringify(result, null, 2)
           }
         ]
       };
     } catch (error: any) {
       console.error(`Error listing datasets: ${error.message}`);
-      
+      console.error(error.stack);
+
       // Return error response
       return {
         content: [
           {
             type: "text",
-            text: `Error listing datasets: ${error.message}`
+            text: JSON.stringify({
+              error: `Error listing datasets: ${error.message}`,
+              errorType: error.name,
+              errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }, null, 2)
           }
         ],
         isError: true
@@ -95,27 +129,27 @@ server.tool(
 
 // Register the getDatasetOverview tool
 server.tool(
-  'powerdrill_get_dataset_overview',
+  'mcp_powerdrill_get_dataset_overview',
   {
     datasetId: z.string().describe('The ID of the dataset to get overview information for')
   },
   async (args, extra) => {
     try {
       const { datasetId } = args;
-      
+
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
-      
+
       // Fetch dataset overview
       const response = await client.getDatasetOverview(datasetId);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Retrieved overview for dataset ${datasetId}`);
-      
+
+      // console.log(`Retrieved overview for dataset ${datasetId}`);
+
       // Format the response as MCP content
       return {
         content: [
@@ -134,7 +168,7 @@ server.tool(
       };
     } catch (error: any) {
       console.error(`Error getting dataset overview: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [
@@ -151,7 +185,7 @@ server.tool(
 
 // Register the createJob tool
 server.tool(
-  'powerdrill_create_job',
+  'mcp_powerdrill_create_job',
   {
     question: z.string().describe('The natural language question or prompt to analyze the data'),
     dataset_id: z.string().describe('The ID of the dataset to analyze'),
@@ -165,7 +199,7 @@ server.tool(
     try {
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
-      
+
       // Create job parameters
       const jobParams = {
         question: args.question,
@@ -176,17 +210,17 @@ server.tool(
         output_language: args.output_language,
         job_mode: args.job_mode
       };
-      
+
       // Create job
       const response = await client.createJob(jobParams);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
-      
+
+      // console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
+
       // Process blocks for a cleaner response
       const processedBlocks = response.data.blocks.map((block: any) => {
         // For TABLE and IMAGE types, just include the URL and name
@@ -198,7 +232,7 @@ server.tool(
             expires_at: block.content.expires_at
           };
         }
-        
+
         // For other types, keep the original content
         return {
           type: block.type,
@@ -206,7 +240,7 @@ server.tool(
           stage: block.stage
         };
       });
-      
+
       // Format the response as MCP content
       return {
         content: [
@@ -221,7 +255,7 @@ server.tool(
       };
     } catch (error: any) {
       console.error(`Error creating job: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [
@@ -238,7 +272,7 @@ server.tool(
 
 // Register the createSession tool
 server.tool(
-  'powerdrill_create_session',
+  'mcp_powerdrill_create_session',
   {
     name: z.string().describe('The session name, which can be up to 128 characters in length'),
     output_language: z.enum(['AUTO', 'EN', 'ES', 'AR', 'PT', 'ID', 'JA', 'RU', 'HI', 'FR', 'DE', 'VI', 'TR', 'PL', 'IT', 'KO', 'ZH-CN', 'ZH-TW'])
@@ -264,7 +298,7 @@ server.tool(
     try {
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
-      
+
       // Create session parameters
       const sessionParams = {
         name: args.name,
@@ -273,17 +307,17 @@ server.tool(
         max_contextual_job_history: args.max_contextual_job_history,
         agent_id: args.agent_id
       };
-      
+
       // Create session
       const response = await client.createSession(sessionParams);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Created session ${response.data.id}`);
-      
+
+      // console.log(`Created session ${response.data.id}`);
+
       // Format the response as MCP content
       return {
         content: [
@@ -297,7 +331,7 @@ server.tool(
       };
     } catch (error: any) {
       console.error(`Error creating session: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [
@@ -316,9 +350,9 @@ server.tool(
 const transport = new StdioServerTransport();
 server.connect(transport)
   .then(() => {
-    console.log('Powerdrill MCP server started');
+    // console.log('Powerdrill MCP server started');
   })
   .catch((error: Error) => {
-    console.error('Failed to start server:', error);
+    // console.error('Failed to start server:', error);
     process.exit(1);
   }); 

@@ -57,14 +57,49 @@ export class PowerdrillClient {
 
   /**
    * List all datasets available in the project
+   * @param options Optional parameters like timeout
    * @returns Promise with the list of datasets
    */
-  async listDatasets() {
+  async listDatasets(options: { timeout?: number } = {}) {
+    const timeout = options.timeout || 30000; // Default 30 second timeout
+
     try {
-      const response = await this.client.get(`/datasets?user_id=${this.config.userId}`);
+      // console.log(`PowerdrillClient: Fetching datasets for user ${this.config.userId}`);
+      const response = await this.client.get(`/datasets?user_id=${this.config.userId}`, {
+        timeout: timeout,
+        validateStatus: (status) => status >= 200 && status < 500 // Don't throw on 4xx errors
+      });
+
+      // Handle HTTP errors manually
+      if (response.status >= 400) {
+        throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Unknown error'}`);
+      }
+
+      // Validate response structure
+      if (!response.data) {
+        throw new Error('Invalid API response: missing data');
+      }
+
+      // console.log(`PowerdrillClient: Retrieved ${response.data?.data?.records?.length || 0} datasets`);
+
       return response.data;
     } catch (error: any) {
-      console.error('Error listing datasets:', error.message);
+      if (error.code === 'ECONNABORTED') {
+        console.error(`PowerdrillClient: Request timed out after ${timeout}ms`);
+        throw new Error(`Request timed out after ${timeout}ms`);
+      }
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error(`PowerdrillClient: HTTP error ${error.response.status}`, error.response.data);
+        throw new Error(`API error: ${error.response.status} ${error.response.statusText}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('PowerdrillClient: No response received', error.request);
+        throw new Error('No response received from API');
+      }
+
+      console.error('PowerdrillClient: Error listing datasets:', error.message);
       throw error;
     }
   }

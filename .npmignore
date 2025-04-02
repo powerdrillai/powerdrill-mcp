@@ -1,0 +1,37 @@
+# Source
+src/
+
+# Config & environment
+.env
+.env.*
+.gitignore
+tsconfig.json
+.editorconfig
+.eslintrc
+.prettierrc
+claude_desktop_config.json
+cursor_config.json
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# System
+.DS_Store
+Thumbs.db
+
+# Test
+test/
+coverage/
+.nyc_output/
+
+# CI/CD
+.github/
+.travis.yml
+.gitlab-ci.yml

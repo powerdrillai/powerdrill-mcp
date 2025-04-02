@@ -5,12 +5,59 @@ A Model Context Protocol (MCP) server that provides tools to interact with Power
 ## Features
 
 - Authenticate with Powerdrill using User ID and Project API Key
-- List available datasets through MCP tools
-- Get detailed overview information for a specific dataset
+- List available datasets in your Powerdrill account
+- Get detailed information about specific datasets
 - Create and run jobs on datasets with natural language questions
 - Integration with Claude Desktop and other MCP-compatible clients
 
-## Getting Powerdrill Credentials
+## Installation
+
+### From npm
+
+```bash
+# Install globally
+npm install -g @powerdrillai/powerdrill-mcp
+
+# Or run directly with npx
+npx @powerdrillai/powerdrill-mcp
+```
+
+### From Source
+
+Clone this repository and install dependencies:
+
+```bash
+git clone https://github.com/yourusername/powerdrill-mcp.git
+cd powerdrill-mcp
+npm install
+```
+
+## CLI Usage
+
+If installed globally:
+
+```bash
+# Start the MCP server
+powerdrill-mcp
+```
+
+If using npx:
+
+```bash
+npx @powerdrillai/powerdrill-mcp
+```
+
+You'll need to configure environment variables with your Powerdrill credentials before running:
+
+```bash
+# Set environment variables
+export POWERDRILL_USER_ID="your_user_id"
+export POWERDRILL_PROJECT_API_KEY="your_project_api_key"
+```
+
+Or create a `.env` file with these values.
+
+## Prerequisites
 
 To use this MCP server, you'll need a Powerdrill account with valid API credentials (**User ID** and **API Key**). Here's how to obtain them:
 
@@ -99,6 +146,28 @@ npm start
 4. Save the configuration
 5. Restart Claude Desktop
 
+### Integrating with Cursor
+
+1. Open Cursor
+2. Go to Settings > MCP Tools
+3. Add a new MCP tool with the following configuration:
+
+```json
+{
+  "powerdrill": {
+    "command": "node",
+    "args": ["/path/to/powerdrill-mcp/dist/index.js"],
+    "env": {
+      "POWERDRILL_USER_ID": "your_actual_user_id",
+      "POWERDRILL_PROJECT_API_KEY": "your_actual_project_api_key"
+    }
+  }
+}
+```
+
+4. Save the configuration
+5. Restart Cursor if needed
+
 ### Using the tools
 
 Once connected, you can use the Powerdrill tools in your conversations with Claude:
@@ -109,7 +178,7 @@ Once connected, you can use the Powerdrill tools in your conversations with Clau
 
 ## Available Tools
 
-### powerdrill_list_datasets
+### mcp_powerdrill_list_datasets
 
 Lists available datasets from your Powerdrill account.
 
@@ -129,7 +198,7 @@ Example response:
 }
 ```
 
-### powerdrill_get_dataset_overview
+### mcp_powerdrill_get_dataset_overview
 
 Gets detailed overview information about a specific dataset.
 
@@ -155,7 +224,7 @@ Example response:
 }
 ```
 
-### powerdrill_create_job
+### mcp_powerdrill_create_job
 
 Creates a job to analyze data with natural language questions.
 

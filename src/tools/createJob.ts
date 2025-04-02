@@ -41,7 +41,7 @@ export const createJobTool = {
       // Initialize Powerdrill client
       const { PowerdrillClient } = await import('../utils/powerdrillClient.js');
       const client = new PowerdrillClient();
-      
+
       // Create job parameters
       const jobParams: CreateJobParams = {
         question: args.question,
@@ -52,17 +52,17 @@ export const createJobTool = {
         output_language: args.output_language,
         job_mode: args.job_mode
       };
-      
+
       // Create job
       const response = await client.createJob(jobParams);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
-      
+
+      // console.log(`Created job ${response.data.job_id} for dataset ${args.dataset_id}`);
+
       // Process blocks for a cleaner response
       const processedBlocks = response.data.blocks.map((block: JobBlock) => {
         // For TABLE and IMAGE types, just include the URL and name
@@ -74,7 +74,7 @@ export const createJobTool = {
             expires_at: block.content.expires_at
           };
         }
-        
+
         // For other types, keep the original content
         return {
           type: block.type,
@@ -82,7 +82,7 @@ export const createJobTool = {
           stage: block.stage
         };
       });
-      
+
       // Format the response as MCP content
       return {
         content: [
@@ -97,7 +97,7 @@ export const createJobTool = {
       };
     } catch (error: any) {
       console.error(`Error creating job: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [

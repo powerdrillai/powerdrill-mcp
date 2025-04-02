@@ -28,21 +28,21 @@ export const getDatasetOverviewTool = {
   handler: async (args: z.infer<typeof getDatasetOverviewParametersSchema>, extra: unknown) => {
     try {
       const { datasetId } = args;
-      
+
       // Initialize Powerdrill client
       const { PowerdrillClient } = await import('../utils/powerdrillClient.js');
       const client = new PowerdrillClient();
-      
+
       // Fetch dataset overview
       const response = await client.getDatasetOverview(datasetId);
-      
+
       // Check if response is valid
       if (response.code !== 0 || !response.data) {
         throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
       }
-      
-      console.log(`Retrieved overview for dataset ${datasetId}`);
-      
+
+      // console.log(`Retrieved overview for dataset ${datasetId}`);
+
       // Format the response as MCP content
       return {
         content: [
@@ -61,7 +61,7 @@ export const getDatasetOverviewTool = {
       };
     } catch (error: any) {
       console.error(`Error getting dataset overview: ${error.message}`);
-      
+
       // Return error response
       return {
         content: [
