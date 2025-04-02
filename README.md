@@ -10,6 +10,24 @@ A Model Context Protocol (MCP) server that provides tools to interact with Power
 - Create and run jobs on datasets with natural language questions
 - Integration with Claude Desktop and other MCP-compatible clients
 
+## Getting Powerdrill Credentials
+
+To use this MCP server, you'll need a Powerdrill account with valid API credentials (**User ID** and **API Key**). Here's how to obtain them:
+
+1. Sign up for a Powerdrill Team account if you haven't already
+2. Navigate to your account settings
+3. Look for the API section where you'll find your:
+   - User ID: A unique identifier for your account
+   - API Key: Your authentication token for API access
+
+First, watch this video tutorial on how to create your Powerdrill Team:
+
+[![Create Powerdrill Team Tutorial](https://img.youtube.com/vi/I-0yGD9HeDw/maxresdefault.jpg)](https://www.youtube.com/watch?v=I-0yGD9HeDw)
+
+Then, follow this video tutorial for setting up your API credentials:
+
+[![Powerdrill API Setup Tutorial](https://img.youtube.com/vi/qs-GsUgjb1g/maxresdefault.jpg)](https://www.youtube.com/watch?v=qs-GsUgjb1g)
+
 ## Quick Setup
 
 The easiest way to set up the server is using the provided setup script:
