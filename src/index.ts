@@ -27,7 +27,7 @@ interface Dataset {
 // Initialize the MCP server
 const server = new McpServer({
   name: 'powerdrill-mcp',
-  version: '0.1.0',
+  version: '0.1.6',
   description: 'MCP server for Powerdrill dataset tools'
 });
 
