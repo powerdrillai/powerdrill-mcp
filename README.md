@@ -220,6 +220,9 @@ Once connected, you can use the Powerdrill tools in your conversations with Clau
 - List datasets: `What datasets are available in my Powerdrill account?`
 - Get dataset overview: `Tell me more about this dataset: {dataset_id}`
 - Create a job: `Analyze dataset {dataset_id} with this question: "How has the trend changed over time?"`
+- Create a session: `Create a new session named "Sales Analysis 2024" for my data analysis`
+- List data sources: `What data sources are available in dataset {dataset_id}?`
+- List sessions: `Show me all my current analysis sessions`
 
 ## Available Tools
 
@@ -308,6 +311,115 @@ Example response:
       "type": "MESSAGE",
       "content": "Analysis of Trends in the Number of Deaths from Natural Disasters...",
       "stage": "Respond"
+    }
+  ]
+}
+```
+
+### mcp_powerdrill_create_session
+
+Creates a new session to group related jobs together.
+
+Parameters:
+- `name` (required): The session name, which can be up to 128 characters in length
+- `output_language` (optional, default: "AUTO"): The language in which the output is generated. Options include: "AUTO", "EN", "ES", "AR", "PT", "ID", "JA", "RU", "HI", "FR", "DE", "VI", "TR", "PL", "IT", "KO", "ZH-CN", "ZH-TW"
+- `job_mode` (optional, default: "AUTO"): Job mode for the session. Options include: "AUTO", "DATA_ANALYTICS"
+- `max_contextual_job_history` (optional, default: 10): The maximum number of recent jobs retained as context for the next job (0-10)
+- `agent_id` (optional, default: "DATA_ANALYSIS_AGENT"): The ID of the agent
+
+Example response:
+```json
+{
+  "session_id": "session-abcdefghijklmnopqrstuvwxyz"
+}
+```
+
+### mcp_powerdrill_list_data_sources
+
+Lists data sources in a specific dataset.
+
+Parameters:
+- `datasetId` (required): The ID of the dataset to list data sources from
+- `pageNumber` (optional, default: 1): The page number to start listing
+- `pageSize` (optional, default: 10): The number of items on a single page
+- `status` (optional): Filter data sources by status: synching, invalid, synched (comma-separated for multiple)
+
+Example response:
+```json
+{
+  "count": 3,
+  "total": 5,
+  "page": 1,
+  "page_size": 10,
+  "data_sources": [
+    {
+      "id": "dsource-a1b2c3d4e5f6g7h8i9j0",
+      "name": "sales_data.csv",
+      "type": "CSV",
+      "status": "synched",
+      "size": 1048576,
+      "dataset_id": "dset-cm5axptyyxxx298"
+    },
+    {
+      "id": "dsource-b2c3d4e5f6g7h8i9j0k1",
+      "name": "customer_info.xlsx",
+      "type": "EXCEL",
+      "status": "synched",
+      "size": 2097152,
+      "dataset_id": "dset-cm5axptyyxxx298"
+    },
+    {
+      "id": "dsource-c3d4e5f6g7h8i9j0k1l2",
+      "name": "market_research.pdf",
+      "type": "PDF",
+      "status": "synched",
+      "size": 3145728,
+      "dataset_id": "dset-cm5axptyyxxx298"
+    }
+  ]
+}
+```
+
+### mcp_powerdrill_list_sessions
+
+Lists available sessions for the current user.
+
+Parameters:
+- `pageNumber` (optional, default: 1): The page number to start listing
+- `pageSize` (optional, default: 10): The number of items on a single page
+- `search` (optional): Search for sessions by name
+
+Example response:
+```json
+{
+  "page_number": 1,
+  "page_size": 10,
+  "total_items": 25,
+  "count": 3,
+  "sessions": [
+    {
+      "id": "session-a1b2c3d4e5f6g7h8i9j0",
+      "name": "Sales Analysis 2024",
+      "output_language": "EN",
+      "job_mode": "DATA_ANALYTICS",
+      "max_contextual_job_history": 10,
+      "agent_id": "DATA_ANALYSIS_AGENT"
+    },
+    {
+      "id": "session-b2c3d4e5f6g7h8i9j0k1",
+      "name": "Customer Segmentation",
+      "output_language": "AUTO",
+      "job_mode": "AUTO",
+      "max_contextual_job_history": 8,
+      "agent_id": "DATA_ANALYSIS_AGENT"
+    },
+    {
+      "id": "session-c3d4e5f6g7h8i9j0k1l2",
+      "name": "Market Trends",
+      "output_language": "EN",
+      "job_mode": "DATA_ANALYTICS",
+      "max_contextual_job_history": 5,
+      "agent_id": "DATA_ANALYSIS_AGENT"
     }
   ]
 }
