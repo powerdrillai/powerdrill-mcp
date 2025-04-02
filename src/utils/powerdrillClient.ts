@@ -171,25 +171,25 @@ export class PowerdrillClient {
     timeout?: number;
   } = {}) {
     const timeout = options.timeout || 30000; // Default 30 second timeout
-    
+
     try {
       // Build query parameters
       let queryParams = `user_id=${this.config.userId}`;
-      
+
       if (options.pageNumber) {
         queryParams += `&page_number=${options.pageNumber}`;
       }
-      
+
       if (options.pageSize) {
         queryParams += `&page_size=${options.pageSize}`;
       }
-      
+
       if (options.status) {
         // Handle array of statuses or single status
         const statusValue = Array.isArray(options.status) ? options.status.join(',') : options.status;
         queryParams += `&status=${statusValue}`;
       }
-      
+
       const response = await this.client.get(`/datasets/${datasetId}/datasources?${queryParams}`, {
         timeout: timeout,
         validateStatus: (status) => status >= 200 && status < 500 // Don't throw on 4xx errors
@@ -223,6 +223,72 @@ export class PowerdrillClient {
       }
 
       console.error('PowerdrillClient: Error listing data sources:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * List sessions
+   * @param options Optional parameters like page number, page size, search keyword and timeout
+   * @returns Promise with the list of sessions
+   */
+  async listSessions(options: { 
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string;
+    timeout?: number;
+  } = {}) {
+    const timeout = options.timeout || 30000; // Default 30 second timeout
+
+    try {
+      // Build query parameters
+      let queryParams = `user_id=${this.config.userId}`;
+
+      if (options.pageNumber) {
+        queryParams += `&page_number=${options.pageNumber}`;
+      }
+
+      if (options.pageSize) {
+        queryParams += `&page_size=${options.pageSize}`;
+      }
+
+      if (options.search) {
+        queryParams += `&search=${encodeURIComponent(options.search)}`;
+      }
+
+      const response = await this.client.get(`/sessions?${queryParams}`, {
+        timeout: timeout,
+        validateStatus: (status) => status >= 200 && status < 500 // Don't throw on 4xx errors
+      });
+
+      // Handle HTTP errors manually
+      if (response.status >= 400) {
+        throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Unknown error'}`);
+      }
+
+      // Validate response structure
+      if (!response.data) {
+        throw new Error('Invalid API response: missing data');
+      }
+
+      return response.data;
+    } catch (error: any) {
+      if (error.code === 'ECONNABORTED') {
+        console.error(`PowerdrillClient: Request timed out after ${timeout}ms`);
+        throw new Error(`Request timed out after ${timeout}ms`);
+      }
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error(`PowerdrillClient: HTTP error ${error.response.status}`, error.response.data);
+        throw new Error(`API error: ${error.response.status} ${error.response.statusText}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('PowerdrillClient: No response received', error.request);
+        throw new Error('No response received from API');
+      }
+
+      console.error('PowerdrillClient: Error listing sessions:', error.message);
       throw error;
     }
   }

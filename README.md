@@ -1,6 +1,8 @@
 # Powerdrill MCP Server
 
 A Model Context Protocol (MCP) server that provides tools to interact with Powerdrill datasets, authenticated with Powerdrill User ID and Project API Key.
+Notes: currently the Powerdrill MCP server implemented the READ-ONLY interfaces for security reason to avoid the data being deleted by LLM in accident.
+If you want to modify data (CREATE/DELETE/UPDATE) in Powerdrill, please go to https://powerdrill.ai/ with your Team access, or if you have the Powerdrill User ID and Project API Key of your Team, you can manipulate the data via https://powerdrill-flow.streamlit.app/.
 
 ## Features
 

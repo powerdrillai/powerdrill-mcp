@@ -434,6 +434,104 @@ server.tool(
   }
 );
 
+// Register the list sessions tool
+server.tool(
+  'mcp_powerdrill_list_sessions',
+  {
+    pageNumber: z.number().optional().describe('The page number to start listing (default: 1)'),
+    pageSize: z.number().optional().describe('The number of items on a single page (default: 10)'),
+    search: z.string().optional().describe('Search for sessions by name')
+  },
+  async (args, extra) => {
+    try {
+      const { pageNumber, pageSize, search } = args;
+
+      // Initialize Powerdrill client
+      const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
+
+      // Fetch sessions
+      const response = await client.listSessions({
+        pageNumber,
+        pageSize,
+        search
+      });
+
+      // Check if response is valid
+      if (!response) {
+        throw new Error(`Empty response received from API`);
+      }
+
+      if (response.code !== 0) {
+        throw new Error(`API returned error code: ${response.code}, message: ${response.message || 'No message'}`);
+      }
+
+      if (!response.data || !response.data.records) {
+        throw new Error(`Invalid API response format: missing data.records property`);
+      }
+
+      const sessions = response.data.records || [];
+
+      if (sessions.length === 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({
+                message: "No sessions found",
+                sessions: []
+              }, null, 2)
+            }
+          ]
+        };
+      }
+
+      // Format the response as MCP content
+      const result = {
+        page_number: response.data.page_number,
+        page_size: response.data.page_size,
+        total_items: response.data.total_items,
+        count: sessions.length,
+        sessions: sessions.map((session: any) => ({
+          id: session.id,
+          name: session.name,
+          output_language: session.output_language,
+          job_mode: session.job_mode,
+          max_contextual_job_history: session.max_contextual_job_history,
+          agent_id: session.agent_id
+        }))
+      };
+
+      // Return the formatted response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }
+        ]
+      };
+    } catch (error: any) {
+      console.error(`Error listing sessions: ${error.message}`);
+      console.error(error.stack);
+
+      // Return error response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              error: `Error listing sessions: ${error.message}`,
+              errorType: error.name,
+              errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }, null, 2)
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
 // Start the server
 const transport = new StdioServerTransport();
 server.connect(transport)
