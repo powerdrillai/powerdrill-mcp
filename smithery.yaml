@@ -1,0 +1,31 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - powerdrillUserId
+      - powerdrillProjectApiKey
+    properties:
+      powerdrillUserId:
+        type: string
+        description: Your Powerdrill User ID to authenticate with Powerdrill.
+      powerdrillProjectApiKey:
+        type: string
+        description: Your Powerdrill Project API Key for secure access.
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: ['dist/index.js'],
+      env: {
+        POWERDRILL_USER_ID: config.powerdrillUserId,
+        POWERDRILL_PROJECT_API_KEY: config.powerdrillProjectApiKey
+      }
+    })
+  exampleConfig:
+    powerdrillUserId: dummy_user_id
+    powerdrillProjectApiKey: dummy_api_key
