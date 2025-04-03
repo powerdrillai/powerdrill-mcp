@@ -226,14 +226,15 @@ npm start
 
 ### Using the tools
 
-Once connected, you can use the Powerdrill tools in your conversations with Claude:
+Once connected, you can use the Powerdrill tools in your conversations with Claude Desktop, Cursor, Cline, Windsurf, etc.:
 
-- List datasets: `What datasets are available in my Powerdrill account?`
-- Get dataset overview: `Tell me more about this dataset: {dataset_id}`
-- Create a job: `Analyze dataset {dataset_id} with this question: "How has the trend changed over time?"`
-- Create a session: `Create a new session named "Sales Analysis 2024" for my data analysis`
-- List data sources: `What data sources are available in dataset {dataset_id}?`
-- List sessions: `Show me all my current analysis sessions`
+- List datasets: `What datasets are available in my Powerdrill account?` or `Show me all my datasets`
+- Create data source from local file: `Upload the file /Users/your_name/Downloads/sales_data.csv to dataset {dataset_id}` or `Add my local file /path/to/customer_data.xlsx to my {dataset_id} dataset`
+- Get dataset overview: `Tell me more about this dataset: {dataset_id}` or `Describe the structure of dataset {dataset_id}`
+- Create a job: `Analyze dataset {dataset_id} with this question: "How has the trend changed over time?"` or `Run a query on {dataset_id} asking "What are the top 10 customers by revenue?"`
+- Create a session: `Create a new session named "Sales Analysis 2024" for my data analysis` or `Start a session called "Customer Segmentation" for analyzing market data`
+- List data sources: `What data sources are available in dataset {dataset_id}?` or `Show me all files in the {dataset_id} dataset`
+- List sessions: `Show me all my current analysis sessions` or `List my recent data analysis sessions`
 
 ## Available Tools
 
