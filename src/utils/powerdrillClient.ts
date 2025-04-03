@@ -10,6 +10,13 @@ interface PowerdrillConfig {
   apiUrl: string;
 }
 
+// Dataset creation parameters interface
+export interface CreateDatasetParams {
+  name: string;
+  description?: string;
+  user_id?: string;
+}
+
 // Job creation parameters interface
 export interface CreateJobParams {
   session_id: string;
@@ -377,6 +384,27 @@ export class PowerdrillClient {
       return response.data;
     } catch (error: any) {
       console.error(`Error retrieving data source details for ${dataSourceId}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new dataset
+   * @param params Parameters for creating a dataset
+   * @returns Promise with the dataset creation result
+   */
+  async createDataset(params: CreateDatasetParams) {
+    try {
+      // Include user_id in the request body if not provided
+      const requestBody = {
+        ...params,
+        user_id: params.user_id || this.config.userId
+      };
+
+      const response = await this.client.post('/datasets', requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating dataset:', error.message);
       throw error;
     }
   }

@@ -229,6 +229,7 @@ npm start
 Once connected, you can use the Powerdrill tools in your conversations with Claude Desktop, Cursor, Cline, Windsurf, etc.:
 
 - List datasets: `What datasets are available in my Powerdrill account?` or `Show me all my datasets`
+- Create dataset: `Create a new dataset called "Sales Analytics"` or `Make a new dataset named "Customer Data" with description "Customer information for 2024 analysis"`
 - Create data source from local file: `Upload the file /Users/your_name/Downloads/sales_data.csv to dataset {dataset_id}` or `Add my local file /path/to/customer_data.xlsx to my {dataset_id} dataset`
 - Get dataset overview: `Tell me more about this dataset: {dataset_id}` or `Describe the structure of dataset {dataset_id}`
 - Create a job: `Analyze dataset {dataset_id} with this question: "How has the trend changed over time?"` or `Run a query on {dataset_id} asking "What are the top 10 customers by revenue?"`
@@ -394,46 +395,50 @@ Example response:
 
 ### mcp_powerdrill_list_sessions
 
-Lists available sessions for the current user.
+Lists sessions from your Powerdrill account.
 
 Parameters:
-- `pageNumber` (optional, default: 1): The page number to start listing
-- `pageSize` (optional, default: 10): The number of items on a single page
+- `pageNumber` (optional): The page number to start listing (default: 1)
+- `pageSize` (optional): The number of items on a single page (default: 10)
 - `search` (optional): Search for sessions by name
 
 Example response:
 ```json
 {
-  "page_number": 1,
-  "page_size": 10,
-  "total_items": 25,
-  "count": 3,
+  "count": 2,
+  "total": 2,
   "sessions": [
     {
-      "id": "session-a1b2c3d4e5f6g7h8i9j0",
-      "name": "Sales Analysis 2024",
-      "output_language": "EN",
-      "job_mode": "DATA_ANALYTICS",
-      "max_contextual_job_history": 10,
-      "agent_id": "DATA_ANALYSIS_AGENT"
+      "id": "session-123abc",
+      "name": "Product Analysis",
+      "job_count": 3,
+      "created_at": "2024-03-15T10:30:00Z",
+      "updated_at": "2024-03-15T11:45:00Z"
     },
     {
-      "id": "session-b2c3d4e5f6g7h8i9j0k1",
-      "name": "Customer Segmentation",
-      "output_language": "AUTO",
-      "job_mode": "AUTO",
-      "max_contextual_job_history": 8,
-      "agent_id": "DATA_ANALYSIS_AGENT"
-    },
-    {
-      "id": "session-c3d4e5f6g7h8i9j0k1l2",
-      "name": "Market Trends",
-      "output_language": "EN",
-      "job_mode": "DATA_ANALYTICS",
-      "max_contextual_job_history": 5,
-      "agent_id": "DATA_ANALYSIS_AGENT"
+      "id": "session-456def",
+      "name": "Financial Forecasting",
+      "job_count": 5,
+      "created_at": "2024-03-10T14:20:00Z",
+      "updated_at": "2024-03-12T09:15:00Z"
     }
   ]
+}
+```
+
+### mcp_powerdrill_create_dataset
+
+Creates a new dataset in your Powerdrill account.
+
+Parameters:
+- `name` (required): The dataset name, which can be up to 128 characters in length
+- `description` (optional): The dataset description, which can be up to 128 characters in length
+
+Example response:
+```json
+{
+  "id": "dataset-adsdfasafdsfasdgasd",
+  "message": "Dataset created successfully"
 }
 ```
 

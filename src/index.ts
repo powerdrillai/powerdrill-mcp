@@ -27,7 +27,7 @@ interface Dataset {
 // Initialize the MCP server
 const server = new McpServer({
   name: 'powerdrill-mcp',
-  version: '0.1.7',
+  version: '0.1.9',
   description: 'MCP server for Powerdrill dataset tools'
 });
 
@@ -521,6 +521,67 @@ server.tool(
             type: "text",
             text: JSON.stringify({
               error: `Error listing sessions: ${error.message}`,
+              errorType: error.name,
+              errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }, null, 2)
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
+// Register the createDataset tool
+server.tool(
+  'mcp_powerdrill_create_dataset',
+  {
+    name: z.string().describe('The dataset name, which can be up to 128 characters in length'),
+    description: z.string().optional().describe('The dataset description, which can be up to 128 characters in length')
+  },
+  async (args, extra) => {
+    try {
+      const { name, description } = args;
+
+      // Initialize Powerdrill client
+      const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
+
+      // Create dataset parameters
+      const datasetParams = {
+        name,
+        description
+      };
+
+      // Create dataset
+      const response = await client.createDataset(datasetParams);
+
+      // Check if response is valid
+      if (response.code !== 0 || !response.data) {
+        throw new Error(`Invalid API response: ${JSON.stringify(response)}`);
+      }
+
+      // Format the response as MCP content
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              id: response.data.id,
+              message: "Dataset created successfully"
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error: any) {
+      console.error(`Error creating dataset: ${error.message}`);
+
+      // Return error response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              error: `Error creating dataset: ${error.message}`,
               errorType: error.name,
               errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             }, null, 2)
