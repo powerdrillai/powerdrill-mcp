@@ -292,4 +292,92 @@ export class PowerdrillClient {
       throw error;
     }
   }
+
+  /**
+   * Initiate a multipart upload for a local file
+   * @param options Parameters for initiating multipart upload
+   * @returns Promise with multipart upload information
+   */
+  async initiateMultipartUpload(options: { 
+    file_name: string;
+    file_size: number;
+  }) {
+    try {
+      const requestBody = {
+        ...options,
+        user_id: this.config.userId
+      };
+
+      const response = await this.client.post('/file/init-multipart-upload', requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error initiating multipart upload:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Complete a multipart upload after all parts are uploaded
+   * @param options Parameters for completing multipart upload
+   * @returns Promise with the completed file information
+   */
+  async completeMultipartUpload(options: {
+    file_object_key: string;
+    upload_id: string;
+    part_etags: Array<{number: number, etag: string}>;
+  }) {
+    try {
+      const requestBody = {
+        ...options,
+        user_id: this.config.userId
+      };
+
+      const response = await this.client.post('/file/complete-multipart-upload', requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error completing multipart upload:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a data source from a file
+   * @param datasetId The ID of the dataset to create the data source in
+   * @param options Parameters for creating a data source
+   * @returns Promise with the created data source information
+   */
+  async createDataSource(datasetId: string, options: {
+    name: string;
+    type: string;
+    file_object_key: string;
+  }) {
+    try {
+      const requestBody = {
+        ...options,
+        user_id: this.config.userId
+      };
+
+      const response = await this.client.post(`/datasets/${datasetId}/datasources`, requestBody);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating data source:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get data source details
+   * @param datasetId The ID of the dataset containing the data source
+   * @param dataSourceId The ID of the data source to retrieve
+   * @returns Promise with the data source details
+   */
+  async getDataSource(datasetId: string, dataSourceId: string) {
+    try {
+      const response = await this.client.get(`/datasets/${datasetId}/datasources/${dataSourceId}?user_id=${this.config.userId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error retrieving data source details for ${dataSourceId}:`, error.message);
+      throw error;
+    }
+  }
 } 

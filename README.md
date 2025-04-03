@@ -3,9 +3,9 @@
 
 A Model Context Protocol (MCP) server that provides tools to interact with Powerdrill datasets, authenticated with Powerdrill User ID and Project API Key.
 
-Notes: currently the Powerdrill MCP server implemented the READ-ONLY interfaces for security reason to avoid the data being deleted by LLM in accident.
+Please go to https://powerdrill.ai/ for AI data analysis individually or use with your Team.
 
-If you want to modify data (CREATE/DELETE/UPDATE) in Powerdrill, please go to https://powerdrill.ai/ with your Team access, or if you have the Powerdrill User ID and Project API Key of your Team, you can manipulate the data via https://powerdrill-flow.streamlit.app/.
+If you have the Powerdrill User ID and Project API Key of your Team, you can manipulate the data via https://powerdrill-flow.streamlit.app/, or play with the open source web client https://github.com/powerdrillai/powerdrill-flow-streamlit.
 
 ## Features
 
@@ -433,6 +433,35 @@ Example response:
       "agent_id": "DATA_ANALYSIS_AGENT"
     }
   ]
+}
+```
+
+### mcp_powerdrill_create_data_source_from_local_file
+
+Creates a new data source by uploading a local file to a specified dataset.
+
+Parameters:
+- `dataset_id` (required): The ID of the dataset to create the data source in
+- `file_path` (required): The local path to the file to upload
+- `file_name` (optional): Custom name for the file, defaults to the original filename
+- `chunk_size` (optional, default: 5MB): Size of each chunk in bytes for multipart upload
+
+Example response:
+```json
+{
+  "dataset_id": "dset-cm5axptyyxxx298",
+  "data_source": {
+    "id": "dsource-a1b2c3d4e5f6g7h8i9j0",
+    "name": "sales_data_2024.csv",
+    "type": "FILE",
+    "status": "synched",
+    "size": 2097152
+  },
+  "file": {
+    "name": "sales_data_2024.csv",
+    "size": 2097152,
+    "object_key": "uploads/user_123/sales_data_2024.csv"
+  }
 }
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "@powerdrillai/powerdrill-mcp",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "MCP server for Powerdrill dataset tools",
   "main": "dist/index.js",
   "type": "module",
