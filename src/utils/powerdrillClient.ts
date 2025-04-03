@@ -64,14 +64,34 @@ export class PowerdrillClient {
 
   /**
    * List all datasets available in the project
-   * @param options Optional parameters like timeout
+   * @param options Optional parameters like page_number, page_size, search, and timeout
    * @returns Promise with the list of datasets
    */
-  async listDatasets(options: { timeout?: number } = {}) {
+  async listDatasets(options: { 
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string;
+    timeout?: number; 
+  } = {}) {
     const timeout = options.timeout || 30000; // Default 30 second timeout
 
     try {
-      const response = await this.client.get(`/datasets?user_id=${this.config.userId}`, {
+      // Build query parameters
+      let queryParams = `user_id=${this.config.userId}`;
+      
+      if (options.pageNumber) {
+        queryParams += `&page_number=${options.pageNumber}`;
+      }
+      
+      if (options.pageSize) {
+        queryParams += `&page_size=${options.pageSize}`;
+      }
+      
+      if (options.search) {
+        queryParams += `&search=${encodeURIComponent(options.search)}`;
+      }
+
+      const response = await this.client.get(`/datasets?${queryParams}`, {
         timeout: timeout,
         validateStatus: (status) => status >= 200 && status < 500 // Don't throw on 4xx errors
       });
@@ -405,6 +425,28 @@ export class PowerdrillClient {
       return response.data;
     } catch (error: any) {
       console.error('Error creating dataset:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a dataset
+   * @param datasetId The ID of the dataset to delete
+   * @returns Promise with the deletion result
+   */
+  async deleteDataset(datasetId: string) {
+    try {
+      const requestBody = {
+        user_id: this.config.userId
+      };
+
+      const response = await this.client.delete(`/datasets/${datasetId}`, {
+        data: requestBody
+      });
+      
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error deleting dataset ${datasetId}:`, error.message);
       throw error;
     }
   }

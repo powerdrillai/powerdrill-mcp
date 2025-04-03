@@ -27,7 +27,7 @@ interface Dataset {
 // Initialize the MCP server
 const server = new McpServer({
   name: 'powerdrill-mcp',
-  version: '0.1.9',
+  version: '0.1.11',
   description: 'MCP server for Powerdrill dataset tools'
 });
 
@@ -35,17 +35,24 @@ const server = new McpServer({
 server.tool(
   'mcp_powerdrill_list_datasets',
   {
-    limit: z.number().optional().describe('Maximum number of datasets to return')
+    limit: z.number().optional().describe('Maximum number of datasets to return'),
+    pageNumber: z.number().optional().describe('The page number to start listing (default: 1)'),
+    pageSize: z.number().optional().describe('The number of items on a single page (default: 10)'),
+    search: z.string().optional().describe('Search for datasets by name')
   },
   async (args, extra) => {
     try {
-      const { limit } = args;
+      const { limit, pageNumber, pageSize, search } = args;
 
       // Initialize Powerdrill client
       const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
 
       // Fetch datasets
-      const response = await client.listDatasets();
+      const response = await client.listDatasets({
+        pageNumber,
+        pageSize,
+        search
+      });
 
       // Check if response is valid
       if (!response) {
@@ -782,6 +789,61 @@ server.tool(
             text: JSON.stringify({
               error: `Error creating data source from local file: ${error.message}`,
               errorType: error.name || 'UnknownError',
+              errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }, null, 2)
+          }
+        ],
+        isError: true
+      };
+    }
+  }
+);
+
+// Register the deleteDataset tool
+server.tool(
+  'mcp_powerdrill_delete_dataset',
+  {
+    datasetId: z.string().describe('The ID of the dataset to delete')
+  },
+  async (args, extra) => {
+    try {
+      const { datasetId } = args;
+
+      // Initialize Powerdrill client
+      const client = new (await import('./utils/powerdrillClient.js')).PowerdrillClient();
+
+      // Delete the dataset
+      const response = await client.deleteDataset(datasetId);
+
+      // Check if response is valid
+      if (response.code !== 0) {
+        throw new Error(`API returned error code: ${response.code}, message: ${response.message || 'No message'}`);
+      }
+
+      // Format the response as MCP content
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              message: `Dataset ${datasetId} successfully deleted`
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error: any) {
+      console.error(`Error deleting dataset: ${error.message}`);
+      console.error(error.stack);
+
+      // Return error response
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              error: `Error deleting dataset: ${error.message}`,
+              errorType: error.name,
               errorStack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             }, null, 2)
           }

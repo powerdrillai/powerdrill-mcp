@@ -3,7 +3,10 @@ import { PowerdrillClient } from '../utils/powerdrillClient.js';
 
 // Define the parameters schema using Zod
 const listDatasetsParametersSchema = z.object({
-  limit: z.number().optional().describe('Maximum number of datasets to return')
+  limit: z.number().optional().describe('Maximum number of datasets to return'),
+  pageNumber: z.number().optional().describe('The page number to start listing (default: 1)'),
+  pageSize: z.number().optional().describe('The number of items on a single page (default: 10)'),
+  search: z.string().optional().describe('Search for datasets by name')
 });
 
 // Define the dataset interface
@@ -34,13 +37,17 @@ export const listDatasetsToolDefinition = {
   parameters: listDatasetsParametersSchema,
   handler: async (args: ListDatasetsArgs, extra: unknown) => {
     try {
-      const { limit } = args;
+      const { limit, pageNumber, pageSize, search } = args;
 
       // Initialize Powerdrill client
       const client = new PowerdrillClient();
 
       // Fetch datasets
-      const response = await client.listDatasets();
+      const response = await client.listDatasets({
+        pageNumber,
+        pageSize,
+        search
+      });
 
       // Check if response is valid
       if (response.code !== 0 || !response.data || !response.data.records) {
