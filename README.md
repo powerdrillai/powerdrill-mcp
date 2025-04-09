@@ -5,7 +5,9 @@ A Model Context Protocol (MCP) server that provides tools to interact with Power
 
 Please go to https://powerdrill.ai/ for AI data analysis individually or use with your Team.
 
-If you have the Powerdrill User ID and Project API Key of your Team, you can manipulate the data via https://powerdrill-flow.streamlit.app/, or play with the open source web client https://github.com/powerdrillai/powerdrill-flow-streamlit.
+If you have the Powerdrill User ID and Project API Key of your Team, you can manipulate the data via Powerdrill open sourced web clients:
+- **Node.js edtion**: https://flow.powerdrill.ai/, or play with the open source web client https://github.com/powerdrillai/powerdrill-flow.
+- **Python edtion**: https://powerdrill-flow.streamlit.app/, or play with the open source web client https://github.com/powerdrillai/powerdrill-flow-streamlit.
 
 ## Features
 
