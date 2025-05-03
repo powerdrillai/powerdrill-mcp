@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/powerdrillai-powerdrill-mcp-badge.png)](https://mseep.ai/app/powerdrillai-powerdrill-mcp)
+
 # Powerdrill MCP Server
 [![smithery badge](https://smithery.ai/badge/@powerdrillai/powerdrill-mcp)](https://smithery.ai/server/@powerdrillai/powerdrill-mcp)
 
