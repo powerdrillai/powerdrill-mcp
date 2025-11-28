@@ -239,6 +239,15 @@ Once connected, you can use the Powerdrill tools in your conversations with Clau
 - List data sources: `What data sources are available in dataset {dataset_id}?` or `Show me all files in the {dataset_id} dataset`
 - List sessions: `Show me all my current analysis sessions` or `List my recent data analysis sessions`
 
+
+
+## Running evals
+
+The evals package loads an mcp client that then runs the index.ts file, so there is no need to rebuild between tests. You can load environment variables by prefixing the npx command. Full documentation can be found [here](https://www.mcpevals.io/docs).
+
+```bash
+OPENAI_API_KEY=your-key  npx mcp-eval src/evals/evals.ts src/index.ts
+```
 ## Available Tools
 
 ### mcp_powerdrill_list_datasets
